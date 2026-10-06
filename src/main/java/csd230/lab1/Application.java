@@ -19,23 +19,19 @@ public class Application {
 	@Bean
 	public CommandLineRunner demo(BookEntityRepository bookRepository, CartEntityRepository cartRepository) {
 		return (args) -> {
-			BookEntity book1 = new BookEntity("Book One", 29.90, 5, "Author A");
-			book1.setIsbn("111111");
+			if (bookRepository.count() == 0) {
+				BookEntity book1 = new BookEntity("Book One", 29.90, 5, "Author A");
+				book1.setIsbn("111111");
 
-			BookEntity book2 = new BookEntity("Book Two", 39.90, 3, "Author B");
-			book2.setIsbn("222222");
+				BookEntity book2 = new BookEntity("Book Two", 39.90, 3, "Author B");
+				book2.setIsbn("222222");
 
-			bookRepository.save(book1);
-			bookRepository.save(book2);
+				bookRepository.save(book1);
+				bookRepository.save(book2);
+			}
 
-			CartEntity cart1 = new CartEntity();
-			cart1.addProduct(book1);
-			cartRepository.save(cart1);
-
-			CartEntity cart2 = new CartEntity();
-			cart2.addProduct(book1);
-			cart2.addProduct(book2);
-			cartRepository.save(cart2);
+			cartRepository.findById(1L)
+					.orElseGet(() -> cartRepository.save(new CartEntity()));
 
 			System.out.println("Derived Query: " + bookRepository.findByIsbn("111111"));
 			System.out.println("Custom Query: " + bookRepository.findByAuthorCustom("Author B"));

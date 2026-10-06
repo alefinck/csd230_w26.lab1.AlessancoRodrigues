@@ -7,6 +7,7 @@ import java.util.Set;
 @Entity
 @Table(name = "cart_entity")
 public class CartEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -20,13 +21,32 @@ public class CartEntity {
     )
     private Set<ProductEntity> products = new LinkedHashSet<>();
 
+    public CartEntity() {
+    }
+
     public void addProduct(ProductEntity product) {
         this.products.add(product);
         product.getCarts().add(this);
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Set<ProductEntity> getProducts() { return products; }
-    public void setProducts(Set<ProductEntity> products) { this.products = products; }
+    public void removeProduct(ProductEntity product) {
+        this.products.remove(product);
+        product.getCarts().remove(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<ProductEntity> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<ProductEntity> products) {
+        this.products = products;
+    }
 }

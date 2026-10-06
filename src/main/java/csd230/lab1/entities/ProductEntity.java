@@ -19,12 +19,10 @@ public abstract class ProductEntity implements Serializable, SaleableItem {
     @ManyToMany(mappedBy = "products")
     private Set<CartEntity> carts = new HashSet<>();
 
-    public Set<CartEntity> getCarts() {
-        return carts;
-    }
+    @ManyToMany(mappedBy = "products")
+    private Set<OrderEntity> orders = new HashSet<>();
 
-    public void setCarts(Set<CartEntity> carts) {
-        this.carts = carts;
+    public ProductEntity() {
     }
 
     public Long getId() {
@@ -33,6 +31,26 @@ public abstract class ProductEntity implements Serializable, SaleableItem {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<CartEntity> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(Set<CartEntity> carts) {
+        this.carts = carts;
+    }
+
+    public Set<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<OrderEntity> orders) {
+        this.orders = orders;
+    }
+
+    public String getProductType() {
+        return this.getClass().getSimpleName();
     }
 
     @Override
