@@ -8,33 +8,49 @@
 <body class="container mt-4">
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Shopping Cart Details</h2>
+    <h2>Your Shopping Cart</h2>
     <a th:href="@{/books}" class="btn btn-secondary">Continue Shopping</a>
 </div>
 
-<table class="table table-striped table-hover align-middle">
-    <thead class="table-dark">
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Price</th>
-        <th class="text-center">Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="product : ${cart.products}">
-        <td th:text="${product.id}">1</td>
-        <td th:text="${product.title}">Sample Title</td>
-        <td th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</td>
-        <td class="text-center">
-            <a th:href="@{/cart/remove/{bookId}(bookId=${product.id})}" class="btn btn-sm btn-danger">Remove</a>
-        </td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(cart.products)}">
-        <td colspan="4" class="text-center text-muted">Your cart is empty.</td>
-    </tr>
-    </tbody>
-</table>
+<div th:if="${#lists.isEmpty(cart.products)}" class="alert alert-info">
+    <p class="mb-0">Your cart is empty.</p>
+</div>
+
+<div th:unless="${#lists.isEmpty(cart.products)}">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th>Item Name / Description</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th class="text-center">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${cart.products}">
+            <td>
+                        <span th:if="${product instanceof T(csd230.lab1.entities.PublicationEntity)}"
+                              th:text="${product.title}"></span>
+                <span th:if="${product instanceof T(csd230.lab1.entities.TicketEntity)}"
+                      th:text="${product.description}"></span>
+                <span th:if="${!(product instanceof T(csd230.lab1.entities.PublicationEntity)) and !(product instanceof T(csd230.lab1.entities.TicketEntity))}"
+                      th:text="${'Item #' + product.id}"></span>
+            </td>
+            <td th:text="${product.productType}">Type</td>
+            <td th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</td>
+            <td class="text-center">
+                <a th:href="@{/cart/remove/{bookId}(bookId=${product.id})}" class="btn btn-sm btn-danger">Remove</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end mt-3">
+        <form th:action="@{/cart/checkout}" method="post">
+            <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>

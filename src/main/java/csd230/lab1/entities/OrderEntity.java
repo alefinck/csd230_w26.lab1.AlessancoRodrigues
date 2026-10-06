@@ -2,6 +2,7 @@ package csd230.lab1.entities;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,10 @@ public class OrderEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private double totalAmount;
+
+    private LocalDateTime orderDate;
 
     @ManyToMany
     @JoinTable(
@@ -30,6 +35,22 @@ public class OrderEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
     }
 
     public Set<ProductEntity> getProducts() {
