@@ -21,6 +21,10 @@ public class CartEntity {
     )
     private Set<ProductEntity> products = new LinkedHashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
     public CartEntity() {
     }
 
@@ -48,5 +52,13 @@ public class CartEntity {
 
     public void setProducts(Set<ProductEntity> products) {
         this.products = products;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }
