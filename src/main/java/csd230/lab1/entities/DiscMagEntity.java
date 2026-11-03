@@ -6,10 +6,10 @@ import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
 @Entity @DiscriminatorValue("DISCMAG")
 public class DiscMagEntity extends MagazineEntity {
-    private boolean hasDisc;
+    private Boolean hasDisc;
     public DiscMagEntity() {}
-    public DiscMagEntity(String t, double p, int c, int o, LocalDateTime d, boolean h) { super(t, p, c, o, d); this.hasDisc = h; }
-    public boolean isHasDisc() { return hasDisc; }
-    public void setHasDisc(boolean h) { this.hasDisc = h; }
+    public DiscMagEntity(String t, Double p, Integer c, Integer o, LocalDateTime d, Boolean h) { super(t, p, c, o, d); this.hasDisc = h; }
+    public Boolean getHasDisc() { return hasDisc; }
+    public void setHasDisc(Boolean h) { this.hasDisc = h; }
     @Override public String toString() { return "DiscMag{disc=" + hasDisc + ", " + super.toString() + "}"; }
 }
