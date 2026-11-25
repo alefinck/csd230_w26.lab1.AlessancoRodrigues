@@ -2,7 +2,6 @@ package csd230.lab1.controllers;
 
 import csd230.lab1.entities.UserEntity;
 import csd230.lab1.repositories.UserEntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,11 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegisterController {
 
-    @Autowired
-    private UserEntityRepository userRepository;
+    private final UserEntityRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public RegisterController(UserEntityRepository userRepository,
+                              PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -27,6 +29,9 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute UserEntity user) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            return "redirect:/register?error";
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("USER");
         userRepository.save(user);

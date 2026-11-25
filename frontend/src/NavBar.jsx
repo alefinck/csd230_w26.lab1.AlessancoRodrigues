@@ -1,6 +1,10 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import useAuth from './useAuth.js';
 
-export default function NavBar() {
+export default function NavBar({ cartCount }) {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
     return (
         <nav>
             <Link to="/">Home</Link>
@@ -10,6 +14,8 @@ export default function NavBar() {
             <Link to="/add-magazine">Add Magazine</Link>
             <Link to="/discmags">Disc Magazines</Link>
             <Link to="/add-discmag">Add Disc Magazine</Link>
+            <Link to="/cart">Cart ({cartCount})</Link>
+            <button onClick={() => { logout(); navigate('/login', { replace: true }); }}>Logout</button>
         </nav>
     );
 }

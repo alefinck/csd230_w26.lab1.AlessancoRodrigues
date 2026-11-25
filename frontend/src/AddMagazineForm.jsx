@@ -1,8 +1,11 @@
+import useAuth from './useAuth.js';
 import api from './api.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function AddMagazineForm({ onMagazineAdded }) {
+    const { token } = useAuth();
+    const isCurrent = () => localStorage.getItem('token') === token;
     const [title, setTitle] = useState('');
     const [publisher, setPublisher] = useState('');
     const [issueNumber, setIssueNumber] = useState('');
@@ -24,6 +27,7 @@ export default function AddMagazineForm({ onMagazineAdded }) {
                 price: Number(price),
                 copies: Number(copies)
             });
+            if (!isCurrent()) return;
             const savedMagazine = response.data;
             onMagazineAdded(savedMagazine);
             setTitle('');
@@ -33,9 +37,9 @@ export default function AddMagazineForm({ onMagazineAdded }) {
             setCopies(10);
             navigate('/magazines');
         } catch (err) {
-            setError(err.message);
+            if (isCurrent()) setError(err.message);
         } finally {
-            setSaving(false);
+            if (isCurrent()) setSaving(false);
         }
     }
 

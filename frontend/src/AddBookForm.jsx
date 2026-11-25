@@ -1,8 +1,11 @@
+import useAuth from './useAuth.js';
 import api from './api.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function AddBookForm({ onBookAdded }) {
+    const { token } = useAuth();
+    const isCurrent = () => localStorage.getItem('token') === token;
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [price, setPrice] = useState('');
@@ -22,6 +25,7 @@ export default function AddBookForm({ onBookAdded }) {
                 price: Number(price),
                 copies: Number(copies)
             });
+            if (!isCurrent()) return;
             const savedBook = response.data;
             onBookAdded(savedBook);
             setTitle('');
@@ -30,9 +34,9 @@ export default function AddBookForm({ onBookAdded }) {
             setCopies(10);
             navigate('/inventory');
         } catch (err) {
-            setError(err.message);
+            if (isCurrent()) setError(err.message);
         } finally {
-            setSaving(false);
+            if (isCurrent()) setSaving(false);
         }
     }
 

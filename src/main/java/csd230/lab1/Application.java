@@ -1,8 +1,10 @@
 package csd230.lab1;
 
 import com.github.javafaker.Faker;
-import csd230.lab1.entities.*;
-import csd230.lab1.repositories.*;
+import csd230.lab1.entities.BookEntity;
+import csd230.lab1.entities.UserEntity;
+import csd230.lab1.repositories.ProductEntityRepository;
+import csd230.lab1.repositories.UserEntityRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
+
 	private final ProductEntityRepository productRepository;
 	private final UserEntityRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -34,7 +37,6 @@ public class Application implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) {
 		Faker faker = new Faker();
-		// Seed 10 random books
 		for (int i = 0; i < 10; i++) {
 			productRepository.save(new BookEntity(
 					faker.book().title(),
@@ -44,9 +46,12 @@ public class Application implements CommandLineRunner {
 			));
 		}
 
-		// Create Default Users
-		userRepository.save(new UserEntity("admin", passwordEncoder.encode("admin"), "ADMIN"));
-		userRepository.save(new UserEntity("user", passwordEncoder.encode("user"), "USER"));
+		if (userRepository.findByUsername("admin") == null) {
+			userRepository.save(new UserEntity("admin", passwordEncoder.encode("admin"), "ADMIN"));
+		}
+		if (userRepository.findByUsername("user") == null) {
+			userRepository.save(new UserEntity("user", passwordEncoder.encode("user"), "USER"));
+		}
 		System.out.println("REST API Lab Ready: admin/admin and user/user created.");
 	}
 
@@ -55,7 +60,10 @@ public class Application implements CommandLineRunner {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api/**").allowedOrigins("*").allowedMethods("GET", "POST", "PUT", "DELETE");
+				registry.addMapping("/api/**")
+						.allowedOrigins("*")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*");
 			}
 		};
 	}

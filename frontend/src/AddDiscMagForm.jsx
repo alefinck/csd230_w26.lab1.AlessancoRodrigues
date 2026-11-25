@@ -1,7 +1,11 @@
+import useAuth from './useAuth.js';
+import api from './api.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 export default function AddDiscMagForm({ onDiscMagAdded }) {
+    const { token } = useAuth();
+    const isCurrent = () => localStorage.getItem('token') === token;
     const [title, setTitle] = useState('');
     const [publisher, setPublisher] = useState('');
     const [issueNumber, setIssueNumber] = useState('');
@@ -17,20 +21,16 @@ export default function AddDiscMagForm({ onDiscMagAdded }) {
         setError('');
         setSaving(true);
         try {
-            const response = await fetch('/api/rest/discmags', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                    publisher,
-                    issueNumber: Number(issueNumber),
-                    price: Number(price),
-                    copies: Number(copies),
-                    hasDisc: Boolean(hasDisc)
-                })
+            const response = await api.post('/discmags', {
+                title,
+                publisher,
+                issueNumber: Number(issueNumber),
+                price: Number(price),
+                copies: Number(copies),
+                hasDisc: Boolean(hasDisc)
             });
-            if (!response.ok) throw new Error(`Save failed (${response.status})`);
-            const savedDiscMag = await response.json();
+            if (!isCurrent()) return;
+            const savedDiscMag = response.data;
             onDiscMagAdded(savedDiscMag);
             setTitle('');
             setPublisher('');
@@ -40,9 +40,9 @@ export default function AddDiscMagForm({ onDiscMagAdded }) {
             setHasDisc(true);
             navigate('/discmags');
         } catch (err) {
-            setError(err.message);
+            if (isCurrent()) setError(err.message);
         } finally {
-            setSaving(false);
+            if (isCurrent()) setSaving(false);
         }
     }
 

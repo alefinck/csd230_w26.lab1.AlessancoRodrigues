@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +73,7 @@ public class BookController {
     }
 
     @GetMapping("/delete/{id}")
+    @Transactional
     public String deleteBook(@PathVariable Long id) {
         BookEntity book = bookRepository.findById(id).orElse(null);
         if (book != null) {

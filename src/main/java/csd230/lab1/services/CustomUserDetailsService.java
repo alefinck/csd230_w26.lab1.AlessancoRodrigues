@@ -2,7 +2,6 @@ package csd230.lab1.services;
 
 import csd230.lab1.entities.UserEntity;
 import csd230.lab1.repositories.UserEntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,8 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserEntityRepository userRepository;
+    private final UserEntityRepository userRepository;
+
+    public CustomUserDetailsService(UserEntityRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -22,10 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
 
+        String role = user.getRole() != null ? user.getRole().replaceFirst("^ROLE_", "") : "USER";
+
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole())
+                .roles(role)
                 .build();
     }
 }
