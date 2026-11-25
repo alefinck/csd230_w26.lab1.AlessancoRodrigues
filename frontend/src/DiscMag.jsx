@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function DiscMag({ discMag, onDelete, onUpdate }) {
+export default function DiscMag({ discMag, onDelete, onUpdate, onAddToCart, cartPending, canManage }) {
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState(discMag);
     const [error, setError] = useState('');
@@ -65,8 +65,9 @@ export default function DiscMag({ discMag, onDelete, onUpdate }) {
             <p>
                 {discMag.publisher} (Issue #{discMag.issueNumber}) | ${Number(discMag.price).toFixed(2)} | Copies: {discMag.copies} | Has Disc: {discMag.hasDisc ? 'Yes' : 'No'}
             </p>
-            <button onClick={beginEdit}>Edit</button>
-            <button onClick={() => onDelete(discMag.id)}>Delete</button>
+            <button disabled={cartPending} onClick={() => onAddToCart(discMag.id)}>Add to Cart</button>
+            {canManage && <button onClick={beginEdit}>Edit</button>}
+            {canManage && <button onClick={() => onDelete(discMag.id)}>Delete</button>}
         </article>
     );
 }

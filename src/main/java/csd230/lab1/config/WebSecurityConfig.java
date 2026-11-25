@@ -4,7 +4,9 @@ import csd230.lab1.security.JwtAuthenticationFilter;
 import csd230.lab1.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -14,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -30,10 +33,34 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/rest/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/api/rest/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rest/carts/mine").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/rest/carts/mine/products/*").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/rest/carts/mine/products/*").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/rest/carts", "/api/rest/carts/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/rest/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/rest/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/h2-console/**", "/login", "/register", "/api/rest/auth/**", "/css/**", "/js/**", "/error").permitAll()
+                        .requestMatchers("/h2-console/**", "/login", "/register", "/css/**", "/js/**", "/error").permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -41,12 +68,6 @@ public class WebSecurityConfig {
                                 "/v3/api-docs.yaml"
                         ).permitAll()
                         .requestMatchers("/books/add", "/books/edit/**", "/books/delete/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/rest/carts/mine").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/rest/carts/mine/products/*").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/rest/carts/mine/products/*").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/rest/carts", "/api/rest/carts/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/rest/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/rest/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -63,7 +84,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/rest/**"));
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
 
         return http.build();
     }

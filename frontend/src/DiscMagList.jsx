@@ -1,6 +1,6 @@
 import DiscMag from './DiscMag.jsx';
 
-export default function DiscMagList({ discMags, loading, error, onDelete, onUpdate }) {
+export default function DiscMagList({ discMags, loading, error, onDelete, onUpdate, onAddToCart, cartPending, canManage }) {
     if (loading) return <p>Loading disc magazines...</p>;
     return (
         <section aria-label="Disc Magazine inventory">
@@ -13,6 +13,9 @@ export default function DiscMagList({ discMags, loading, error, onDelete, onUpda
                     discMag={discMag}
                     onDelete={onDelete}
                     onUpdate={onUpdate}
+                    onAddToCart={onAddToCart}
+                    cartPending={cartPending}
+                    canManage={canManage}
                 />
             ))}
         </section>

@@ -11,9 +11,9 @@ export default function NavBar({ cartCount }) {
             <Link to="/inventory">Books</Link>
             {isAdmin && <Link to="/add">Add Book</Link>}
             <Link to="/magazines">Magazines</Link>
-            <Link to="/add-magazine">Add Magazine</Link>
+            {isAdmin && <Link to="/add-magazine">Add Magazine</Link>}
             <Link to="/discmags">Disc Magazines</Link>
-            <Link to="/add-discmag">Add Disc Magazine</Link>
+            {isAdmin && <Link to="/add-discmag">Add Disc Magazine</Link>}
             <Link to="/cart">Cart ({cartCount})</Link>
             <button onClick={() => { logout(); navigate('/login', { replace: true }); }}>Logout</button>
         </nav>

@@ -237,8 +237,25 @@ function BookApp() {
                     }
                 />
                 <Route path="/add-magazine" element={<AddMagazineForm onMagazineAdded={handleMagazineAdded} />} />
-                <Route path="/discmags" element={<DiscMagList discMags={discMags} loading={discMagsLoading} error={discMagsError} onDelete={handleDeleteDiscMag} onUpdate={handleUpdateDiscMag} />} />
-                <Route path="/add-discmag" element={<AddDiscMagForm onDiscMagAdded={handleDiscMagAdded} />} />
+                <Route
+                    path="/discmags"
+                    element={
+                        <DiscMagList
+                            discMags={discMags}
+                            loading={discMagsLoading}
+                            error={discMagsError}
+                            onDelete={handleDeleteDiscMag}
+                            onUpdate={handleUpdateDiscMag}
+                            onAddToCart={changeCart}
+                            cartPending={cartLoading || cartPending}
+                            canManage={isAdmin}
+                        />
+                    }
+                />
+                <Route
+                    path="/add-discmag"
+                    element={isAdmin ? <AddDiscMagForm onDiscMagAdded={handleDiscMagAdded} /> : <p role="alert">Administrator access is required.</p>}
+                />
                 <Route path="*" element={<h2>Page not found</h2>} />
             </Routes>
         </>
