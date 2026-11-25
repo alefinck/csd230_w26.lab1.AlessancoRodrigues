@@ -1,3 +1,4 @@
+import api from './api.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -15,18 +16,13 @@ export default function AddBookForm({ onBookAdded }) {
         setError('');
         setSaving(true);
         try {
-            const response = await fetch('/api/rest/books', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                    author,
-                    price: Number(price),
-                    copies: Number(copies)
-                })
+            const response = await api.post('/books', {
+                title,
+                author,
+                price: Number(price),
+                copies: Number(copies)
             });
-            if (!response.ok) throw new Error(`Save failed (${response.status})`);
-            const savedBook = await response.json();
+            const savedBook = response.data;
             onBookAdded(savedBook);
             setTitle('');
             setAuthor('');

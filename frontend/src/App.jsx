@@ -1,3 +1,4 @@
+import api from './api.js';
 import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router';
 import NavBar from './NavBar.jsx';
@@ -25,12 +26,8 @@ export default function App() {
 
     useEffect(() => {
         let active = true;
-        fetch('/api/rest/books')
-            .then(res => {
-                if (!res.ok) throw new Error(`Load failed (${res.status})`);
-                return res.json();
-            })
-            .then(data => { if (active) setBooks(data); })
+        api.get('/books')
+            .then(response => { if (active) setBooks(response.data); })
             .catch(err => { if (active) setError(err.message); })
             .finally(() => { if (active) setLoading(false); });
         return () => { active = false; };
@@ -70,19 +67,14 @@ export default function App() {
         if (!window.confirm('Delete this book?')) return;
         setError('');
         try {
-            const response = await fetch(`/api/rest/books/${id}`, { method: 'DELETE' });
-            if (!response.ok) throw new Error(`Delete failed (${response.status})`);
+            await api.delete(`/books/${id}`);
             setBooks(previous => previous.filter(book => book.id !== id));
         } catch (err) { setError(err.message); }
     }
 
     async function handleUpdateBook(id, data) {
-        const response = await fetch(`/api/rest/books/${id}`, {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) throw new Error(`Update failed (${response.status})`);
-        const savedBook = await response.json();
+        const response = await api.put(`/books/${id}`, data);
+        const savedBook = response.data;
         setBooks(previous => previous.map(book => book.id === id ? savedBook : book));
     }
 

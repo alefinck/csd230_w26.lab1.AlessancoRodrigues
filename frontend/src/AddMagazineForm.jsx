@@ -1,3 +1,4 @@
+import api from './api.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -16,19 +17,14 @@ export default function AddMagazineForm({ onMagazineAdded }) {
         setError('');
         setSaving(true);
         try {
-            const response = await fetch('/api/rest/magazines', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                    publisher,
-                    issueNumber: Number(issueNumber),
-                    price: Number(price),
-                    copies: Number(copies)
-                })
+            const response = await api.post('/magazines', {
+                title,
+                publisher,
+                issueNumber: Number(issueNumber),
+                price: Number(price),
+                copies: Number(copies)
             });
-            if (!response.ok) throw new Error(`Save failed (${response.status})`);
-            const savedMagazine = await response.json();
+            const savedMagazine = response.data;
             onMagazineAdded(savedMagazine);
             setTitle('');
             setPublisher('');
