@@ -1,6 +1,6 @@
 import Book from './Book.jsx';
 
-export default function BookList({ books, loading, error, onDelete, onUpdate, onAddToCart, cartPending }) {
+export default function BookList({ books, loading, error, onDelete, onUpdate, onAddToCart, cartPending, canManage }) {
     if (loading) return <p>Loading books...</p>;
     return (
         <section aria-label="Book inventory">
@@ -15,6 +15,7 @@ export default function BookList({ books, loading, error, onDelete, onUpdate, on
                     onUpdate={onUpdate}
                     onAddToCart={onAddToCart}
                     cartPending={cartPending}
+                    canManage={canManage}
                 />
             ))}
         </section>

@@ -5,7 +5,7 @@ import AddMagazineForm from './AddMagazineForm.jsx';
 import Magazine from './Magazine.jsx';
 
 export default function MagazineList({ onAddToCart, cartPending }) {
-    const { token } = useAuth();
+    const { token, isAdmin } = useAuth();
     const isCurrent = () => localStorage.getItem('token') === token;
     const [magazines, setMagazines] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function MagazineList({ onAddToCart, cartPending }) {
     return (
         <section aria-label="Magazine inventory">
             <h2>Magazines</h2>
-            <AddMagazineForm onMagazineAdded={saved => { if (isCurrent()) setMagazines(previous => [...previous, saved]); }} />
+            {isAdmin && <AddMagazineForm onMagazineAdded={saved => { if (isCurrent()) setMagazines(previous => [...previous, saved]); }} />}
             {error && <p role="alert">{error}</p>}
             {!error && magazines.length === 0 && <p>No magazines yet.</p>}
             {magazines.map(magazine => (
@@ -53,6 +53,7 @@ export default function MagazineList({ onAddToCart, cartPending }) {
                     onUpdate={handleUpdateMagazine}
                     onAddToCart={onAddToCart}
                     cartPending={cartPending}
+                    canManage={isAdmin}
                 />
             ))}
         </section>

@@ -38,7 +38,7 @@ function SignedInBookApp() {
 }
 
 function BookApp() {
-    const { token } = useAuth();
+    const { token, isAdmin } = useAuth();
     const isCurrent = () => localStorage.getItem('token') === token;
     const navigate = useNavigate();
 
@@ -200,6 +200,7 @@ function BookApp() {
                             error={error}
                             onDelete={handleDeleteBook}
                             onUpdate={handleUpdateBook}
+                            canManage={isAdmin}
                             onAddToCart={changeCart}
                             cartPending={cartLoading || cartPending}
                         />
@@ -217,7 +218,10 @@ function BookApp() {
                         />
                     }
                 />
-                <Route path="/add" element={<AddBookForm onBookAdded={handleBookAdded} />} />
+                <Route
+                    path="/add"
+                    element={isAdmin ? <AddBookForm onBookAdded={handleBookAdded} /> : <p role="alert">Administrator access is required.</p>}
+                />
                 <Route
                     path="/magazines"
                     element={
